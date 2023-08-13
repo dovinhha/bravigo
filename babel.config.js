@@ -10,6 +10,8 @@ plugins.push([
       '@screens': './src/screens',
       '@interfaces': './src/interfaces',
       '@contexts': './src/contexts',
+      '@configs': './src/configs',
+      '@apis': './src/apis',
     },
   },
 ]);

@@ -25,6 +25,8 @@ if linkage != nil
   use_frameworks! :linkage => linkage.to_sym
 end
 
+pod 'react-native-config', :path => '../node_modules/react-native-config'
+
 target 'bravigo_applications' do
   config = use_native_modules!
 

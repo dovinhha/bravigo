@@ -12,7 +12,9 @@
     "paths": {
       "@screens/*": ["screens/*"],
       "@interfaces/*": ["interfaces/*"],
-      "@contexts/*": ["contexts/*"]
+      "@contexts/*": ["contexts/*"],
+      "@apis/*": ["apis/*"],
+      "@configs/*": ["configs/*"]
     }
   },
   "include": ["./**/*"],
