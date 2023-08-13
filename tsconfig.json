@@ -1,0 +1,28 @@
+{
+  "compileOnSave": true,
+  "compilerOptions": {
+    "outDir": "./built",
+    "jsx": "react",
+    "allowSyntheticDefaultImports": true,
+    "isolatedModules": true,
+    "allowJs": true,
+    "strict": true,
+    // Path alias config
+    "baseUrl": "src",
+    "paths": {
+      "@screens/*": ["screens/*"],
+      "@interfaces/*": ["interfaces/*"],
+      "@contexts/*": ["contexts/*"]
+    }
+  },
+  "include": ["./**/*"],
+  "exclude": [
+    "node_modules",
+    "babel.config.js",
+    "metro.config.js",
+    "jest.config.js",
+    "./plugins/**/*",
+    "./typings/**/*",
+    "./built/**/*" // This is what fixed it!
+  ]
+}
