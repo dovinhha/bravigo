@@ -20,7 +20,7 @@ axiosClient.interceptors.request.use(
     config: InternalAxiosRequestConfig<any>,
   ): Promise<InternalAxiosRequestConfig> => {
     const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MjRiZWZmNWU2YTg0YzAwMTM3Y2UzMDkiLCJpYXQiOjE2OTE5MzkxNDksImV4cCI6MTY5MTk0MDk0OSwidHlwZSI6ImFjY2VzcyJ9.xKBg_U60z90Gx0yQxfgbm73baiFD-XR1xC5vhIHXXNY';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MTRiMTgyYTcxZTFiOTAwMTIwNDVhZTUiLCJpYXQiOjE2OTE5OTgyMjEsImV4cCI6MTY5MjAwMDAyMSwidHlwZSI6ImFjY2VzcyJ9.bThBch4gJqzP4UpJ-uqr9PCU2Km5k_VihyI2HnNAEvU';
     // JSON.parse(localStorage.getItem('access-token') ?? '""');
 
     config.headers.authorization = `Bearer ${token}`;

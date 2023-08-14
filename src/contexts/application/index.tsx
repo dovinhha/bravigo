@@ -1,11 +1,15 @@
 import React, {createContext, useContext, useEffect, useState} from 'react';
-import {Application} from '@interfaces/application';
+import _ from 'lodash';
+import queryString from 'query-string';
+import {Application, ApplicationGroup} from '@interfaces/application';
 import applications from '@apis/applications';
 
 interface ApplicationContent {
   apps: Application[];
-  handleGetApplications: () => void;
+  appGroups: ApplicationGroup[];
+  handleGetApplications: (value: boolean) => void;
   isLoading: boolean;
+  isRefreshing: boolean;
 }
 
 type ApplicationProviderProps = {
@@ -17,20 +21,48 @@ const ApplicationContext = createContext<ApplicationContent | string>('');
 export const ApplicationProvider = ({children}: ApplicationProviderProps) => {
   const [apps, setApps] = useState<Application[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
   useEffect(() => {
-    handleGetApplications();
+    handleGetApplications(false);
   }, []);
 
-  const handleGetApplications = async () => {
-    setIsLoading(true);
-    const res = await applications.getApplications();
+  const handleGetApplications = async (refeshing: boolean) => {
+    if (refeshing) {
+      setIsRefreshing(true);
+    } else {
+      setIsLoading(true);
+    }
+    const res = await applications.getApplications(
+      queryString.stringify({
+        page: 1,
+        limit: 9999,
+      }),
+    );
     const results = (res?.data.results as Application[]) ?? [];
     setApps(results);
-    setIsLoading(false);
+    if (refeshing) {
+      setIsRefreshing(false);
+    } else {
+      setIsLoading(false);
+    }
   };
 
-  const value = {apps, isLoading, handleGetApplications};
+  const appGroups = _.chain(apps)
+    .groupBy('type')
+    .map((value: Application[], key: string) => ({
+      type: Number(key),
+      value: value,
+    }))
+    .value();
+
+  const value = {
+    apps,
+    appGroups,
+    isLoading,
+    isRefreshing,
+    handleGetApplications,
+  };
 
   return (
     <ApplicationContext.Provider value={value}>

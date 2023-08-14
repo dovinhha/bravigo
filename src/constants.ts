@@ -5,6 +5,9 @@ export interface ApplicationType {
 
 const types: ApplicationType[] = [{label: 'Tiện ích', value: 0}];
 
+const primaryColor = '#790100';
+
 export default {
   types,
+  primaryColor,
 };

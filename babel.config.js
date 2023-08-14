@@ -12,6 +12,7 @@ plugins.push([
       '@contexts': './src/contexts',
       '@configs': './src/configs',
       '@apis': './src/apis',
+      '@assets': './src/assets',
     },
   },
 ]);

@@ -7,3 +7,8 @@ export interface Application {
   fileUrl: string;
   type: number;
 }
+
+export interface ApplicationGroup {
+  type: number;
+  value: Application[];
+}

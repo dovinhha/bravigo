@@ -14,6 +14,7 @@
       "@interfaces/*": ["interfaces/*"],
       "@contexts/*": ["contexts/*"],
       "@apis/*": ["apis/*"],
+      "@assets/*": ["assets/*"],
       "@configs/*": ["configs/*"]
     }
   },
