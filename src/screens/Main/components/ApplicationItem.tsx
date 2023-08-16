@@ -19,7 +19,8 @@ import update from '../../../assets/images/update.png';
 import CONSTANTS from '../../../constants';
 import {Wander} from 'react-native-animated-spinkit';
 
-import AppInfo from '../../../../nativeModules';
+import AppInfo from '../../../../appInfoModule';
+import ApkInstaller from '../../../../apkInstallerModule';
 
 type Props = {
   item: Application | null;
@@ -47,25 +48,43 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
       );
       if (granted) {
         const {dirs} = RNFetchBlob.fs;
-        const dirToSave = `${dirs.DownloadDir}/${url ?? ''}`;
+        const filename = url.split('/');
+        const dirToSave = `${dirs.DownloadDir}/${moment().unix()}_${
+          filename[filename.length - 1] ?? ''
+        }`;
 
-        await RNFetchBlob.config({
-          fileCache: true,
-          addAndroidDownloads: {
-            useDownloadManager: true,
-            notification: true,
-            path: dirToSave,
-            description: '',
-          },
-        })
-          .fetch('GET', fileUrl)
-          .then(() => {
-            closeAll();
-            handleToast(1);
+        ApkInstaller.installApk(dirToSave)
+          .then(res => {
+            console.log('res: ', res);
           })
-          .catch(() => {
-            handleToast(-1);
+          .catch(error => {
+            console.log('error installer: ', error);
           });
+
+        // await RNFetchBlob.config({
+        //   fileCache: true,
+        //   addAndroidDownloads: {
+        //     useDownloadManager: true,
+        //     notification: true,
+        //     path: dirToSave,
+        //     description: '',
+        //   },
+        // })
+        //   .fetch('GET', fileUrl)
+        //   .then(() => {
+        //     closeAll();
+        //     handleToast(1);
+        //     ApkInstaller.installApk(dirToSave)
+        //       .then(res => {
+        //         console.log('res: ', res);
+        //       })
+        //       .catch(error => {
+        //         console.log('error installer: ', error);
+        //       });
+        //   })
+        //   .catch(() => {
+        //     handleToast(-1);
+        //   });
         return true;
       }
     }
@@ -169,6 +188,7 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
   };
 
   useEffect(() => {
+    console.log();
     if (item) {
       AppInfo.getAppVersion(item?.packageName)
         .then(appVersion => {
@@ -180,8 +200,8 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
             setNeedUpdate(res.isNeeded);
           });
         })
-        .catch(error => {
-          console.log('error: ', error);
+        .catch(() => {
+          // console.log('error: ', error);
         });
     }
   }, []);
