@@ -6,6 +6,9 @@ export interface Application {
   iconUrl: string;
   fileUrl: string;
   type: number;
+  version: string;
+  packageName: string;
+  unInstallRequired: boolean;
 }
 
 export interface ApplicationGroup {
