@@ -1,7 +1,7 @@
 /* eslint-disable react-native/no-inline-styles */
 import {Box, Center, FlatList, HStack, Image, Text} from 'native-base';
 import React, {memo, useMemo} from 'react';
-import {SafeAreaView, useWindowDimensions} from 'react-native';
+import {SafeAreaView, useWindowDimensions, TextInput} from 'react-native';
 import {Wander} from 'react-native-animated-spinkit';
 
 import {useApplication} from '@contexts/application';
@@ -16,7 +16,7 @@ const Main = () => {
   const {width, height} = useWindowDimensions();
   const scale = scaleValue({currentScreen: {width, height}, desire: 0});
 
-  const {appGroups, isLoading, isRefreshing, handleGetApplications} =
+  const {appGroups, isLoading, isRefreshing, handleGetApplications, setName} =
     useApplication();
 
   const renderApplications = useMemo(() => {
@@ -56,8 +56,8 @@ const Main = () => {
           alignItems={'center'}
           justifyContent={'center'}>
           {[...value, ...new Array(add).fill(null).map(() => null)].map(
-            (item: Application | null, index) => {
-              return renderApplication(item, index);
+            (app: Application | null, index) => {
+              return renderApplication(app, index);
             },
           )}
         </HStack>
@@ -65,28 +65,41 @@ const Main = () => {
     );
   };
 
-  const renderApplication = (item: Application | null, index: number) => {
-    return <ApplicationItem item={item} key={index} />;
+  const renderApplication = (app: Application | null, index: number) => {
+    return <ApplicationItem item={app} key={index} />;
   };
 
   return (
     <Box p={4} flex={1} bg={CONSTANTS.primaryColor}>
       <SafeAreaView style={{flex: 1}}>
-        <HStack mb={2}>
+        <HStack mb={2} space={3} alignItems={'center'}>
           <Image
             source={logo}
             alt={'logo'}
             w={`${120 * scale}px`}
             h={`${30 * scale}px`}
           />
+          <TextInput
+            placeholder="Nhập tên ứng dụng tìm kiếm"
+            style={{
+              backgroundColor: '#fff',
+              flex: 1,
+              height: scale * 36,
+              paddingVertical: 0,
+              borderRadius: 6,
+            }}
+            onChangeText={text => {
+              setName(text);
+            }}
+          />
         </HStack>
         <Box flex={1} bg="#FFF" borderRadius={'20px'} shadow={3}>
-          {renderApplications}
           {isLoading ? (
             <Center flex={1} p={3}>
               <Wander size={48} color={CONSTANTS.primaryColor} />
             </Center>
           ) : null}
+          {renderApplications}
         </Box>
       </SafeAreaView>
     </Box>

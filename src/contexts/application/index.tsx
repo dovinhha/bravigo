@@ -10,6 +10,7 @@ interface ApplicationContent {
   handleGetApplications: (value: boolean) => void;
   isLoading: boolean;
   isRefreshing: boolean;
+  setName: (value: string) => void;
 }
 
 type ApplicationProviderProps = {
@@ -20,8 +21,9 @@ const ApplicationContext = createContext<ApplicationContent | string>('');
 
 export const ApplicationProvider = ({children}: ApplicationProviderProps) => {
   const [apps, setApps] = useState<Application[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [name, setName] = useState<string>('');
 
   useEffect(() => {
     handleGetApplications(false);
@@ -39,7 +41,7 @@ export const ApplicationProvider = ({children}: ApplicationProviderProps) => {
         limit: 9999,
       }),
     );
-    const results = (res?.data.results as Application[]) ?? [];
+    let results = (res?.data.results as Application[]) ?? [];
     setApps(results);
     if (refeshing) {
       setIsRefreshing(false);
@@ -48,7 +50,14 @@ export const ApplicationProvider = ({children}: ApplicationProviderProps) => {
     }
   };
 
-  const appGroups = _.chain(apps)
+  const appGroups = _.chain(
+    apps.filter(item => {
+      if (name === '') {
+        return true;
+      }
+      return item.name.includes(name);
+    }),
+  )
     .groupBy('type')
     .map((value: Application[], key: string) => ({
       type: Number(key),
@@ -62,6 +71,7 @@ export const ApplicationProvider = ({children}: ApplicationProviderProps) => {
     isLoading,
     isRefreshing,
     handleGetApplications,
+    setName,
   };
 
   return (

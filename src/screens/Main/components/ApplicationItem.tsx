@@ -1,12 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
 import React, {useEffect, useState} from 'react';
 import {Application} from '@interfaces/application';
-import {Box, Button, HStack, Image, Text, VStack, useToast} from 'native-base';
+import {Box, Button, HStack, Text, VStack, useToast} from 'native-base';
 import {
   PermissionsAndroid,
   Platform,
   TouchableOpacity,
   useWindowDimensions,
+  Image,
 } from 'react-native';
 import moment from 'moment';
 import RNFetchBlob from 'rn-fetch-blob';
@@ -15,6 +16,7 @@ import {Wander} from 'react-native-animated-spinkit';
 
 import {scaleValue} from 'common';
 import urls from '@configs/urls';
+import installed from '../../../assets/images/installed.png';
 import download from '../../../assets/images/download.png';
 import update from '../../../assets/images/update.png';
 import CONSTANTS from '../../../constants';
@@ -163,6 +165,22 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
     }
   };
 
+  const handleIcon = () => {
+    if (needInstall) {
+      console.log('needInstall: ', item?.name);
+      return download;
+    }
+    if (needUpdate) {
+      console.log('update: ', item?.name);
+      return update;
+    }
+    if (!needInstall) {
+      console.log('installed: ', item?.name);
+      return installed;
+    }
+    return null;
+  };
+
   useEffect(() => {
     if (item) {
       AppInfo.getAppVersion(item?.packageName)
@@ -215,9 +233,11 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
                   uri: `${urls.BASE_IMAGE_URL}${item.iconUrl}`,
                 }}
                 alt={item.name}
-                rounded={10}
-                w={`${36 * scale}px`}
-                h={`${36 * scale}px`}
+                style={{
+                  height: 36 * scale,
+                  width: 36 * scale,
+                  borderRadius: 10 * scale,
+                }}
               />
 
               <VStack flex={1}>
@@ -245,7 +265,12 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
               fontWeight={'400'}>
               {item.lastUpdate && moment(item.lastUpdate).format('DD/MM/YY')}
             </Text>
-            <TouchableOpacity onPress={() => handleDownloadApk(item.fileUrl)}>
+            <TouchableOpacity
+              onPress={() => {
+                if (needUpdate || needInstall) {
+                  handleDownloadApk(item.fileUrl);
+                }
+              }}>
               <HStack alignItems={'center'}>
                 <Text
                   numberOfLines={3}
@@ -258,40 +283,16 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
                     ? 'Cập nhật'
                     : 'Đã cài đặt'}
                 </Text>
-                {needInstall ? (
-                  <Image
-                    source={download}
-                    // mt={0.5}
-                    w={`${12 * scale}px`}
-                    h={`${12 * scale}px`}
-                    alt={'download'}
-                  />
-                ) : needUpdate ? (
-                  <Image
-                    source={update}
-                    // mt={0.5}
-                    w={`${12 * scale}px`}
-                    h={`${12 * scale}px`}
-                    alt={'update'}
-                  />
-                ) : null}
-                {/* {needUpdate ? (
-                  <Image
-                    source={update}
-                    // mt={0.5}
-                    w={`${12 * scale}px`}
-                    h={`${12 * scale}px`}
-                    alt={'update'}
-                  />
-                ) : (
-                  <Image
-                    source={download}
-                    // mt={0.5}
-                    w={`${12 * scale}px`}
-                    h={`${12 * scale}px`}
-                    alt={'download'}
-                  />
-                )} */}
+                <Image
+                  source={
+                    needInstall ? download : needUpdate ? update : installed
+                  }
+                  style={{
+                    height: 12 * scale,
+                    width: 12 * scale,
+                  }}
+                  alt={'icon'}
+                />
               </HStack>
             </TouchableOpacity>
           </HStack>

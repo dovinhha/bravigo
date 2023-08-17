@@ -8,6 +8,7 @@
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",
+    "postinstall": "patch-package",
     "apk": "cd android && ./gradlew clean && ./gradlew assembleRelease && cd .. ",
     "appbundle": "cd android && ./gradlew clean && ./gradlew bundleRelease && cd .. "
   },
@@ -16,6 +17,7 @@
     "axios": "^1.4.0",
     "moment": "^2.29.4",
     "native-base": "^3.4.28",
+    "patch-package": "^8.0.0",
     "query-string": "^8.1.0",
     "react": "18.2.0",
     "react-native": "0.72.3",
