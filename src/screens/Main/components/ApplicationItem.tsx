@@ -11,13 +11,13 @@ import {
 import moment from 'moment';
 import RNFetchBlob from 'rn-fetch-blob';
 import VersionCheck from 'react-native-version-check';
+import {Wander} from 'react-native-animated-spinkit';
 
 import {scaleValue} from 'common';
 import urls from '@configs/urls';
 import download from '../../../assets/images/download.png';
 import update from '../../../assets/images/update.png';
 import CONSTANTS from '../../../constants';
-import {Wander} from 'react-native-animated-spinkit';
 
 import AppInfo from '../../../../appInfoModule';
 import ApkInstaller from '../../../../apkInstallerModule';
@@ -32,6 +32,7 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
   const scale = scaleValue({currentScreen: {width, height}, desire: 0});
 
   const [needUpdate, setNeedUpdate] = useState(false);
+  const [needInstall, setNeedInstall] = useState(false);
 
   const handleDownloadApk = async (url: string) => {
     handleToast(0);
@@ -53,38 +54,26 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
           filename[filename.length - 1] ?? ''
         }`;
 
-        ApkInstaller.installApk(dirToSave)
-          .then(res => {
-            console.log('res: ', res);
+        await RNFetchBlob.config({
+          fileCache: true,
+          addAndroidDownloads: {
+            useDownloadManager: true,
+            notification: true,
+            path: dirToSave,
+            description: '',
+          },
+        })
+          .fetch('GET', fileUrl)
+          .then(() => {
+            // handleToast(1);
+            closeAll();
+            ApkInstaller.installApk(dirToSave)
+              .then(() => {})
+              .catch(() => {});
           })
-          .catch(error => {
-            console.log('error installer: ', error);
+          .catch(() => {
+            handleToast(-1);
           });
-
-        // await RNFetchBlob.config({
-        //   fileCache: true,
-        //   addAndroidDownloads: {
-        //     useDownloadManager: true,
-        //     notification: true,
-        //     path: dirToSave,
-        //     description: '',
-        //   },
-        // })
-        //   .fetch('GET', fileUrl)
-        //   .then(() => {
-        //     closeAll();
-        //     handleToast(1);
-        //     ApkInstaller.installApk(dirToSave)
-        //       .then(res => {
-        //         console.log('res: ', res);
-        //       })
-        //       .catch(error => {
-        //         console.log('error installer: ', error);
-        //       });
-        //   })
-        //   .catch(() => {
-        //     handleToast(-1);
-        //   });
         return true;
       }
     }
@@ -95,6 +84,7 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
   };
 
   const handleToast = (type: number) => {
+    closeAll();
     switch (type) {
       case 0:
         toast.show({
@@ -112,7 +102,7 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
               </HStack>
             );
           },
-          duration: 2000,
+          duration: null,
         });
         break;
       case 1:
@@ -147,20 +137,6 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
                   }}>
                   Đóng
                 </Button>
-                {/* <Button
-                  _text={{
-                    fontSize: `${10 * scale}px`,
-                    color: '#FFF',
-                  }}
-                  p={1}
-                  bg={CONSTANTS.primaryColor}
-                  onPress={() => {
-                    Linking.openURL(link).catch(error => {
-                      console.log(error);
-                    });
-                  }}>
-                  Đi tới thư mục tải ứng dụng
-                </Button> */}
               </HStack>
             );
           },
@@ -188,7 +164,6 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
   };
 
   useEffect(() => {
-    console.log();
     if (item) {
       AppInfo.getAppVersion(item?.packageName)
         .then(appVersion => {
@@ -201,7 +176,7 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
           });
         })
         .catch(() => {
-          // console.log('error: ', error);
+          setNeedInstall(true);
         });
     }
   }, []);
@@ -277,9 +252,30 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
                   fontSize={`${9 * scale}px`}
                   color={CONSTANTS.primaryColor}
                   fontWeight={'500'}>
-                  {needUpdate ? 'Cập nhật' : 'Tải xuống'}
+                  {needInstall
+                    ? 'Tải xuống'
+                    : needUpdate
+                    ? 'Cập nhật'
+                    : 'Đã cài đặt'}
                 </Text>
-                {needUpdate ? (
+                {needInstall ? (
+                  <Image
+                    source={download}
+                    // mt={0.5}
+                    w={`${12 * scale}px`}
+                    h={`${12 * scale}px`}
+                    alt={'download'}
+                  />
+                ) : needUpdate ? (
+                  <Image
+                    source={update}
+                    // mt={0.5}
+                    w={`${12 * scale}px`}
+                    h={`${12 * scale}px`}
+                    alt={'update'}
+                  />
+                ) : null}
+                {/* {needUpdate ? (
                   <Image
                     source={update}
                     // mt={0.5}
@@ -295,7 +291,7 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
                     h={`${12 * scale}px`}
                     alt={'download'}
                   />
-                )}
+                )} */}
               </HStack>
             </TouchableOpacity>
           </HStack>
