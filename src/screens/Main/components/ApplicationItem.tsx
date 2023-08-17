@@ -181,7 +181,7 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
           setNeedInstall(true);
         });
     }
-  }, []);
+  }, [item]);
 
   return (
     <Box

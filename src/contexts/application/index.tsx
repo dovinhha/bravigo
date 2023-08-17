@@ -55,7 +55,7 @@ export const ApplicationProvider = ({children}: ApplicationProviderProps) => {
       if (name === '') {
         return true;
       }
-      return item.name.includes(name);
+      return item.name.toLowerCase().includes(name.toLowerCase());
     }),
   )
     .groupBy('type')
