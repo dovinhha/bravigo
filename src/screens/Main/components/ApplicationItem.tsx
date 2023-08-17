@@ -165,22 +165,6 @@ const ApplicationItem: React.FC<Props> = ({item}) => {
     }
   };
 
-  const handleIcon = () => {
-    if (needInstall) {
-      console.log('needInstall: ', item?.name);
-      return download;
-    }
-    if (needUpdate) {
-      console.log('update: ', item?.name);
-      return update;
-    }
-    if (!needInstall) {
-      console.log('installed: ', item?.name);
-      return installed;
-    }
-    return null;
-  };
-
   useEffect(() => {
     if (item) {
       AppInfo.getAppVersion(item?.packageName)
